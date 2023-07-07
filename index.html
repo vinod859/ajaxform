@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+            integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+        <link rel="stylesheet" href="css/style.css">
+
+    </head>
+
+    <body>
+        <div class="form">
+            <div class="form-container">
+                <h1 style="background-color: rgb(245, 241, 220); text-align: center;">AJAX Form Submit </h1>
+                <form action="#" method="POST" id="ajaxform">
+                    <input style="display: none;" type="text" id="empid"><br>
+                    <input type="text" name="name" placeholder="Enter your name" id="nameid" /><br>
+                    <input type="email" name="email" id="emailid" placeholder="Enter employee email" required><br>
+                    <input type="text" name="salary" id="salaryid" placeholder="Enter employee salary" required><br>
+
+                    <button class="block" type="submit" value="submit" name="submit" id="btnadd">Submit</button><br>
+                    <div style=" background-color: rgba(0, 128, 19, 0.842); width: max-content; color: white;" id="msg">
+                    </div>
+                </form>
+            </div>
+            <br><br>
+            <div>
+                <h3 style="background-color: rgb(245, 241, 220);">Show Employee Information</h3>
+                <table border="2">
+
+                    <th>
+                        <!-- <td>ID</td> -->
+                    <td>Name</td>
+                    <td>Email</td>
+                    <td>Salary</td>
+                    <td>Created_at</td>
+                    <td>Updated_at</td>
+                    <td>Action</td>
+                    </th>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+        <script type="text/javascript">
+            function showdata() {
+                output = '';
+                $.ajax({
+                    url: "fetch.php",
+                    method: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        // console.log(data);
+                        if (data) {
+                            x = data;
+                        } else {
+                            x = "";
+                        }
+                        for (i = 0; i < x.length; i++) {
+                            output += "<tr><td>" + x[i].id + "</td><td>" + x[i].name + "</td><td>" + x[i].email + "</td><td>" + x[i].salary + "</td><td>" + x[i].created_at + "</td><td>" + x[i].updated_at + "</td><td><button class='update-btn' data-eid=" + x[i].id + " >Update</button><button class='del-btn 'data-eid=" + x[i].id + ">Delete</button></td><tr>";
+                        }
+
+                        $("#tbody").html(output);
+                    }
+
+                })
+            }
+            showdata();
+            $('#btnadd').click(function (e) {
+                e.preventDefault();
+                console.log('Button clicked')
+                let emid = $("#empid").val();
+                let enm = $("#nameid").val();
+                let em = $("#emailid").val();
+                let es = $("#salaryid").val();
+                // console.log(enm);
+                // console.log(em);
+                // console.log(es);
+                mydata = { id: emid, name: enm, email: em, salary: es };
+                // console.log(mydata);
+                $.ajax({
+                    url: "insert.php",
+                    method: "POST",
+                    data: JSON.stringify(mydata),
+                    success: function (data) {
+                        // console.log(data);
+                        msg = "<div>" + data + "</div>";
+                        $("#msg").html(msg);
+                        $("#ajaxform")[0].reset();
+                        showdata();
+                    },
+                });
+            });
+            //Ajax Delete operation
+            $("tbody").on("click", ".del-btn", function () {
+                console.log('del btn clicked')
+                let id = $(this).attr("data-eid");
+                // console.log(id);
+                mydata = { eid: id };
+                mythis = this;
+                $.ajax({
+                    method: "POST",
+                    url: 'delete.php',
+                    data: JSON.stringify(mydata),
+                    success: function (data) {
+                        console.log(data)
+                        if (data == 1) {
+                            msg = "<div> employee deteted Succesfully </div>";
+                            $("#msg").html(msg);
+                            // showdata() ;
+                            $(mythis).closest("tr").fadeOut()
+                        } else if (data == 0) {
+                            msg = "<div> Unable to deleted employee </div>";
+                        }
+                        $("#msg").html(msg);
+                    }
+                });
+            });
+            // Ajax Update Operation
+            $("tbody").on("click", ".update-btn", function () {
+                console.log('update btn clicked');
+                let id = $(this).attr("data-eid");
+                // console.log(id);
+                mydata = { eid: id };
+                $.ajax({
+                    url: "update.php",
+                    method: "POST",
+                    dataType: "json",
+                    data: JSON.stringify(mydata),
+                    success: function (data) {
+                        console.log(data);
+                        $('#empid').val(data.id);
+                        $('#nameid').val(data.name);
+                        $('#emailid').val(data.email);
+                        $('#salaryid').val(data.salary);
+
+                    },
+
+                });
+            });
+        </script>
+    </body>
+
+</html>

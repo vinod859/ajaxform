@@ -1,0 +1,44 @@
+.form-container{
+     background-color: cadetblue;
+     height:350px;
+     width: 250px;
+     padding: 20px;
+     margin-top: 20px;
+}
+
+.form-container form{
+    text-align: center;
+}
+  
+  
+.form {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10px;
+
+}
+  
+  form .block {
+    display: block;
+    width: 100%;
+    border: none;
+    background-color: #cb23c89f;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 10px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+  }
+ form .block:focus {
+    background-color: lightblue;
+    color: whitesmoke;
+  }
+
+  form input{
+    display: block;
+    width: max-content;
+    border: none;
+    padding: 10px 28px;
+    font-size: 16px;
+    text-align: center;
+  }
